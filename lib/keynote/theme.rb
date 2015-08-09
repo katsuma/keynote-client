@@ -5,7 +5,7 @@ module Keynote
   class Theme
     extend Keynote::Util
 
-    attr_accessor :id, :name
+    attr_reader :id, :name
 
     def initialize(id: nil, name: nil)
       @id = id
