@@ -5,6 +5,7 @@ require 'keynote/util'
 module Keynote
   class Document
     extend Keynote::Util
+    include Keynote::Util
 
     attr_accessor(
       :name,
@@ -19,6 +20,7 @@ module Keynote
       :current_slide,
       :height,
       :width,
+      :file_path,
     )
 
     attr_reader :id
@@ -33,8 +35,10 @@ module Keynote
       @document_theme = arguments[:theme] || Theme.default
       @width = arguments.has_key?(:wide) && arguments[:wide] ? WIDE_WIDTH : DEFAULT_WIDTH
       @height = arguments.has_key?(:wide) && arguments[:wide] ? WIDE_HEIGHT : DEFAULT_HEIGHT
+      @file_path = arguments[:file_path]
 
       result = Document.create(theme: @document_theme, width: @width, height: @height)
+      @id = result["id"]
       @maximum_idle_duration = result["maximumIdleDuration"]
       @current_slide = result["currentSlide"]
       @slide_numbers_showing = result["slideNumbersShowing"]
@@ -43,6 +47,26 @@ module Keynote
       @auto_restart = result["autoRestart"]
       @maximum_idle_duration = result["maximumIdleDuration"]
       @name = result["name"]
+    end
+
+    def save
+      return false unless @id
+      return false unless @file_path
+      eval_script <<-APPLE.unindent
+        var Keynote = Application("Keynote")
+        var doc = Keynote.documents.byId("#{@id}")
+        var path = Path("#{@file_path}")
+        doc.save({ in: path })
+      APPLE
+      true
+    rescue => e
+      false
+    end
+
+    class DocumentInvalid < RuntimeError; end
+
+    def save!
+      raise DocumentInvalid unless save
     end
 
     def self.create(arguments = {})
