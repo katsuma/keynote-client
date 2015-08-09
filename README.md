@@ -3,7 +3,7 @@
 `keynote-client` will provide a high level API (like ActiveRecord style) to control your Keynote.
 
 Currently this project is in alpha stage.
-We support only Theme object.
+We now support `Theme` and `Document` object.
 
 
 ## Usage
@@ -23,7 +23,7 @@ themes = Theme.find_by(:all)
 theme = Theme.find_by(name: 'ブラック').first
 # #<Keynote::Theme:0x007fd9ec821748 @id="Application/Black/Standard", @name="ブラック">,
 
-doc = Document.new(theme: theme)
+doc = Document.new(theme: theme, file_path: '/path/to/foo.key')
 #=> #<Keynote::Document:0x007fbe03224228
 # @auto_loop=false,
 # @auto_play=false,
@@ -36,6 +36,9 @@ doc = Document.new(theme: theme)
 # @slide_numbers_showing=false,
 # @slides=[],
 # @width=1024>
+
+doc.save
+# => true
 ```
 
 
