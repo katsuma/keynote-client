@@ -12,6 +12,10 @@ module Keynote
       @name = name
     end
 
+    def self.default
+      self.find_by(:all).first
+    end
+
     def self.find_by(args)
       raise ArgumentError.new('nil argument is given') unless args
 
