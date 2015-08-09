@@ -12,7 +12,7 @@ module Keynote
       execute_out, process_status = *Open3.capture2(command)
       JSON.parse(execute_out.chomp)
     ensure
-      #file.delete
+      file.delete
     end
 
   end

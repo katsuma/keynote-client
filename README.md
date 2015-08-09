@@ -22,6 +22,20 @@ themes = Theme.find_by(:all)
 
 theme = Theme.find_by(name: 'ブラック').first
 # #<Keynote::Theme:0x007fd9ec821748 @id="Application/Black/Standard", @name="ブラック">,
+
+doc = Document.new(theme: theme)
+#=> #<Keynote::Document:0x007fbe03224228
+# @auto_loop=false,
+# @auto_play=false,
+# @auto_restart=false,
+# @current_slide=nil,
+# @document_theme=#<Keynote::Theme:0x007fbe031f6e68 @id="Application/Black/Standard", @name="ブラック">,
+# @height=768,
+# @maximum_idle_duration=15,
+# @name="名称未設定",
+# @slide_numbers_showing=false,
+# @slides=[],
+# @width=1024>
 ```
 
 
