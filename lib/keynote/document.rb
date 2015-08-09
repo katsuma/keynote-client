@@ -69,6 +69,10 @@ module Keynote
       raise DocumentInvalid unless save
     end
 
+    def export
+      # TBD
+    end
+
     def self.create(arguments = {})
       theme = arguments[:theme] || Theme.default
       width = arguments[:width]
