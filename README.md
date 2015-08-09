@@ -8,6 +8,27 @@ Currently this project is in alpha stage. It supports these features.
 - Appending a new slide with specified master slide
 - Saving a document
 
+## Install
+
+Add this line to your application's Gemfile:
+
+```sh
+gem keynote-client'
+```
+
+And then execute:
+
+```sh
+$ bundle
+```
+
+Or install it yourself as:
+
+```sh
+$ gem install keynote-client
+```
+
+
 ## Usage
 
 ```ruby
