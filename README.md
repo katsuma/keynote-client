@@ -2,9 +2,11 @@
 
 `keynote-client` will provide a high level API (like ActiveRecord style) to control your Keynote.
 
-Currently this project is in alpha stage.
-We now support `Theme` and `Document` object.
+Currently this project is in alpha stage. It supports these features.
 
+- Creating a new document with specified theme
+- Appending a new slide with specified master slide
+- Saving a document
 
 ## Usage
 
@@ -24,7 +26,7 @@ theme = Theme.find_by(name: 'ブラック').first
 # #<Keynote::Theme:0x007fd9ec821748 @id="Application/Black/Standard", @name="ブラック">,
 
 doc = Document.new(theme: theme, file_path: '/path/to/foo.key')
-#=> #<Keynote::Document:0x007fbe03224228
+# => #<Keynote::Document:0x007fbe03224228
 # @auto_loop=false,
 # @auto_play=false,
 # @auto_restart=false,
@@ -39,6 +41,40 @@ doc = Document.new(theme: theme, file_path: '/path/to/foo.key')
 
 doc.save
 # => true
+
+doc.slides
+# => [#<Keynote::Slide:0x007fa17c2bcb98
+#  @base_slide=#<Keynote::MasterSlide:0x007fa17c2bcbe8 @name="タイトル & サブタイトル">,
+#  @body_showing=true,
+#  @default_body_item=nil,
+#  @default_title_item=nil,
+#  @presenter_notes="",
+#  @skipped=false,
+#  @slide_number=1,
+#  @title_showing=true,
+#  @transition_properties={"transitionDelay"=>0.5, "automaticTransition"=>false, "transitionEffect"=>"no transition effect", "transitionDuration"=>1}>]
+
+doc.append_slide("空白")
+# => [#<Keynote::Slide:0x007fa17c2bcb98
+#   @base_slide=#<Keynote::MasterSlide:0x007fa17c2bcbe8 @name="タイトル & サブタイトル">,
+#   @body_showing=true,
+#   @default_body_item=nil,
+#   @default_title_item=nil,
+#   @presenter_notes="",
+#   @skipped=false,
+#   @slide_number=1,
+#   @title_showing=true,
+#   @transition_properties={"transitionDelay"=>0.5, "automaticTransition"=>false, "transitionEffect"=>"no transition effect", "transitionDuration"=>1}>,
+#  #<Keynote::Slide:0x007fa17a8bbc08
+#   @base_slide=#<Keynote::MasterSlide:0x007fa17a8bbc58 @name="空白">,
+#   @body_showing=false,
+#   @default_body_item=nil,
+#   @default_title_item=nil,
+#   @presenter_notes="",
+#   @skipped=false,
+#   @slide_number=2,
+#   @title_showing=false,
+#   @transition_properties={"transitionDelay"=>0.5, "automaticTransition"=>false, "transitionEffect"=>"no transition effect", "transitionDuration"=>1}>]
 ```
 
 
