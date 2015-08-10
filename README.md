@@ -46,7 +46,7 @@ themes = Theme.find_by(:all)
 theme = Theme.find_by(name: 'ブラック').first
 # #<Keynote::Theme:0x007fd9ec821748 @id="Application/Black/Standard", @name="ブラック">,
 
-doc = Document.new(theme: theme, file_path: '/path/to/foo.key')
+doc = Document.create(theme: theme, file_path: '/path/to/foo.key')
 # => #<Keynote::Document:0x007fbe03224228
 # @auto_loop=false,
 # @auto_play=false,

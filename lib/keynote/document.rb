@@ -35,17 +35,15 @@ module Keynote
       @width = arguments.has_key?(:wide) && arguments[:wide] ? WIDE_WIDTH : DEFAULT_WIDTH
       @height = arguments.has_key?(:wide) && arguments[:wide] ? WIDE_HEIGHT : DEFAULT_HEIGHT
       @file_path = arguments[:file_path]
-
-      result = Document.create(theme: @document_theme, width: @width, height: @height)
-      @id = result["id"]
-      @maximum_idle_duration = result["maximumIdleDuration"]
-      @current_slide = result["currentSlide"]
-      @slide_numbers_showing = result["slideNumbersShowing"]
-      @auto_loop = result["autoLoop"]
-      @auto_play = result["autoPlay"]
-      @auto_restart = result["autoRestart"]
-      @maximum_idle_duration = result["maximumIdleDuration"]
-      @name = result["name"]
+      @id = arguments[:id]
+      @maximum_idle_duration = arguments[:maximumIdleDuration]
+      @current_slide = arguments[:currentSlide]
+      @slide_numbers_showing = arguments[:slideNumbersShowing]
+      @auto_loop = arguments[:autoLoop]
+      @auto_play = arguments[:autoPlay]
+      @auto_restart = arguments[:autoRestart]
+      @maximum_idle_duration = arguments[:maximumIdleDuration]
+      @name = arguments[:name]
     end
 
     def master_slides
@@ -170,26 +168,55 @@ module Keynote
 
     def self.create(arguments = {})
       theme = arguments[:theme] || Theme.default
-      width = arguments[:width]
-      height = arguments[:height]
+      width = arguments[:wide] ? WIDE_WIDTH : DEFAULT_WIDTH
+      height = arguments[:wide] ? WIDE_HEIGHT : DEFAULT_HEIGHT
 
-      eval_script <<-APPLE.unindent
+      result = eval_script <<-APPLE.unindent
         var Keynote = Application("Keynote")
         var theme = Keynote.themes.whose({ id: "#{theme.id}" }).first
-        Keynote.documents.push(Keynote.Document({ documentTheme: theme, width: #{width}, height: #{height} }));
-        var doc = Keynote.documents()[Keynote.documents().length - 1];
-        JSON.stringify({
-          id: doc.id(),
-          height: doc.height(),
-          autoRestart: doc.autoRestart(),
-          maximumIdleDuration: doc.maximumIdleDuration(),
-          width: doc.width(),
-          slideNumbersShowing: doc.slideNumbersShowing(),
-          autoPlay: doc.autoPlay(),
-          autoLoop: doc.autoLoop(),
-          name: doc.name()
-        });
+        var doc = Keynote.Document({ documentTheme: theme, width: #{width}, height: #{height} });
+        Keynote.documents.push(doc);
+        JSON.stringify(doc.properties());
       APPLE
+
+      self.new(symbolize_keys(result).merge(theme: theme, width: width, height: height))
+    end
+
+    def self.find_by(args)
+      raise ArgumentError.new('nil argument is given') unless args
+
+      if args.is_a?(Hash) && args.has_key?(:id)
+        conditions = ".whose({ id: '#{args[:id]}' })"
+      elsif args == :all
+        conditions = ''
+      else
+        raise ArgumentError.new('Unsupported argument is given')
+      end
+
+      results = eval_script <<-APPLE.unindent
+        var documents = Application("Keynote").documents#{conditions};
+        var results = [];
+        for(var i = 0, len = documents.length; i < len; i++) {
+          results.push(documents[i].properties());
+        }
+        JSON.stringify(results);
+      APPLE
+
+      return [] unless results
+
+      results.map do |result|
+        self.new(symbolize_keys(result))
+      end
+    end
+
+    def self.current
+      self.find_by(:all).first
+    end
+
+    private
+
+    def self.symbolize_keys(hash)
+      Hash[hash.map { |k, v| [k.to_sym, v] }]
     end
   end
 end
