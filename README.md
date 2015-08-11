@@ -13,7 +13,7 @@ Currently this project is in alpha stage. It supports these features.
 Add this line to your application's Gemfile:
 
 ```sh
-gem keynote-client'
+gem 'keynote-client'
 ```
 
 And then execute:
