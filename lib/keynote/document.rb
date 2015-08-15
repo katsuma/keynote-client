@@ -80,8 +80,8 @@ module Keynote
             skipped: slide.skipped(),
             slide_number: slide.slideNumber(),
             title_showing: slide.titleShowing(),
-            default_body_item: slide.defaultBodyItem(),
-            default_title_item: slide.defaultTitleItem(),
+            body: slide.defaultBodyItem.objectText(),
+            title: slide.defaultTitleItem.objectText(),
             presenter_notes: slide.presenterNotes(),
             transition_properties: slide.transitionProperties()
           })
@@ -91,13 +91,14 @@ module Keynote
 
       @slides = results.map do |result|
         Slide.new(
+          document: self,
           base_slide: MasterSlide.new(result["base_slide"]),
           body_showing: result["body_showing"],
           skipped: result["skipped"],
           slide_number: result["slide_number"],
           title_showing: result["title_showing"],
-          default_body_item: result["default_body_item"],
-          default_title_item: result["default_title_item"],
+          body: result["body"],
+          title: result["title"],
           presenter_notes: result["presenter_notes"],
           transition_properties: result["transition_properties"],
         )
@@ -116,14 +117,16 @@ module Keynote
         var slide = Keynote.Slide({ baseSlide: masterSlide })
         doc.slides.push(slide)
         slide = doc.slides()[doc.slides().length - 1]
+        slide.defaultTitleItem.objectText = "#{arguments[:title]}"
+        slide.defaultBodyItem.objectText = "#{arguments[:body]}"
 
         var slideResult = {
           body_showing: slide.bodyShowing(),
           skipped: slide.skipped(),
           slide_number: slide.slideNumber(),
           title_showing: slide.titleShowing(),
-          default_body_item: slide.defaultBodyItem(),
-          default_title_item: slide.defaultTitleItem(),
+          body: slide.defaultBodyItem.objectText(),
+          title: slide.defaultTitleItem.objectText(),
           presenter_notes: slide.presenterNotes(),
           transition_properties: slide.transitionProperties()
         }
@@ -136,8 +139,8 @@ module Keynote
         skipped: result["skipped"],
         slide_number: result["slide_number"],
         title_showing: result["title_showing"],
-        default_body_item: result["default_body_item"],
-        default_title_item: result["default_title_item"],
+        body: result["body"],
+        title: result["title"],
         presenter_notes: result["presenter_notes"],
         transition_properties: result["transition_properties"],
       )
