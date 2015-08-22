@@ -49,7 +49,7 @@ doc = Document.create(theme: theme, file_path: '/path/to/foo.key')
 doc.save
 
 # Initialize a new slide
-slide = Slide.new("タイトル & 箇条書き", title: 'Pen', body: ["This is a pen", "Is this a pen?"].join("\n")")
+slide = Slide.new("タイトル & 箇条書き", title: 'Pen', body: ["This is a pen", "Is this a pen?"].join("\n"))
 
 # Append slides
 doc.slides << slide
