@@ -1,6 +1,3 @@
-require 'unindent'
-require 'keynote/theme'
-require 'keynote/slide_array'
 require 'keynote/util'
 
 module Keynote
