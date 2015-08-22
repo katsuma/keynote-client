@@ -19,7 +19,8 @@ module Keynote
       :transition_properties,
     )
 
-    def initialize(arguments = {})
+    def initialize(base_slide, arguments = {})
+      @base_slide = base_slide
       arguments.each do |attr, val|
         send("#{attr}=", val)
       end
