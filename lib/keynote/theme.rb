@@ -13,7 +13,11 @@ module Keynote
     end
 
     def self.default
-      self.find_by(:all).first
+      self.all.first
+    end
+
+    def self.all
+      self.find_with_conditions
     end
 
     def self.find_by(args)
@@ -21,12 +25,16 @@ module Keynote
 
       if args.is_a?(Hash) && args.has_key?(:name)
         conditions = ".whose({ name: '#{args[:name]}' })"
-      elsif args == :all
-        conditions = ''
       else
         raise ArgumentError.new('Unsupported argument is given')
       end
 
+      find_with_conditions(conditions)
+    end
+
+    private
+
+    def self.find_with_conditions(conditions = '')
       results = eval_script <<-APPLE.unindent
         var themes = Application("Keynote").themes#{conditions};
         var results = [];

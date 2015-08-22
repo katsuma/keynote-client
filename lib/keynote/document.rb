@@ -148,17 +148,33 @@ module Keynote
       self.new(symbolize_keys(result).merge(theme: theme, width: width, height: height))
     end
 
+    def self.all
+      self.find_with_conditions
+    end
+
     def self.find_by(args)
       raise ArgumentError.new('nil argument is given') unless args
 
       if args.is_a?(Hash) && args.has_key?(:id)
         conditions = ".whose({ id: '#{args[:id]}' })"
-      elsif args == :all
-        conditions = ''
       else
         raise ArgumentError.new('Unsupported argument is given')
       end
 
+      find_with_conditions(conditions)
+    end
+
+    def self.current
+      self.all.first
+    end
+
+    private
+
+    def self.symbolize_keys(hash)
+      Hash[hash.map { |k, v| [k.to_sym, v] }]
+    end
+
+    def self.find_with_conditions(conditions = '')
       results = eval_script <<-APPLE.unindent
         var documents = Application("Keynote").documents#{conditions};
         var results = [];
@@ -173,16 +189,6 @@ module Keynote
       results.map do |result|
         self.new(symbolize_keys(result))
       end
-    end
-
-    def self.current
-      self.find_by(:all).first
-    end
-
-    private
-
-    def self.symbolize_keys(hash)
-      Hash[hash.map { |k, v| [k.to_sym, v] }]
     end
   end
 end
