@@ -7,22 +7,49 @@ module Keynote
     include Keynote::Util
 
     attr_accessor(
-      :id,
+      :document,
       :base_slide,
       :body_showing,
       :skipped,
       :slide_number,
       :title_showing,
-      :default_body_item,
-      :default_title_item,
+      :body,
+      :title,
       :presenter_notes,
       :transition_properties,
     )
 
-    def initialize(arguments = {})
+    def initialize(base_slide, arguments = {})
+      @base_slide = base_slide
       arguments.each do |attr, val|
         send("#{attr}=", val)
       end
+    end
+
+    def title=(title)
+      @title = title
+      return unless @document
+      return unless @slide_number
+      result = eval_script <<-APPLE.unindent
+        var Keynote = Application("Keynote")
+        var doc = Keynote.documents.byId("#{@document.id}")
+        var slide = doc.slides()[#{@slide_number - 1}]
+        slide.defaultTitleItem.objectText = "#{title}"
+        JSON.stringify({ result: true })
+      APPLE
+    end
+
+    def body=(body)
+      @body = body
+      return unless @document
+      return unless @slide_number
+      result = eval_script <<-APPLE.unindent
+        var Keynote = Application("Keynote")
+        var doc = Keynote.documents.byId("#{@document.id}")
+        var slide = doc.slides()[#{@slide_number - 1}]
+        slide.defaultBodyItem.objectText = "#{body}"
+        JSON.stringify({ result: true })
+      APPLE
     end
   end
 end

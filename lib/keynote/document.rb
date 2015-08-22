@@ -1,5 +1,6 @@
 require 'unindent'
 require 'keynote/theme'
+require 'keynote/slide_array'
 require 'keynote/util'
 
 module Keynote
@@ -78,8 +79,8 @@ module Keynote
             skipped: slide.skipped(),
             slide_number: slide.slideNumber(),
             title_showing: slide.titleShowing(),
-            default_body_item: slide.defaultBodyItem(),
-            default_title_item: slide.defaultTitleItem(),
+            body: slide.defaultBodyItem.objectText(),
+            title: slide.defaultTitleItem.objectText(),
             presenter_notes: slide.presenterNotes(),
             transition_properties: slide.transitionProperties()
           })
@@ -87,59 +88,24 @@ module Keynote
         JSON.stringify(results);
       APPLE
 
-      @slides = results.map do |result|
-        Slide.new(
-          base_slide: MasterSlide.new(result["base_slide"]),
-          body_showing: result["body_showing"],
-          skipped: result["skipped"],
-          slide_number: result["slide_number"],
-          title_showing: result["title_showing"],
-          default_body_item: result["default_body_item"],
-          default_title_item: result["default_title_item"],
-          presenter_notes: result["presenter_notes"],
-          transition_properties: result["transition_properties"],
-        )
-      end
-    end
-
-    # arguments is not implemented
-    # It will support title, body, ... or so on.
-    def append_slide(master_slide_name, arguments = {})
-      raise ArgumentError.new "nil master_slide_name is given" unless master_slide_name
-
-      result = eval_script <<-APPLE.unindent
-        var Keynote = Application("Keynote")
-        var doc = Keynote.documents.byId("#{self.id}")
-        var masterSlide = doc.masterSlides.whose({name: "#{master_slide_name}"}).first
-        var slide = Keynote.Slide({ baseSlide: masterSlide })
-        doc.slides.push(slide)
-        slide = doc.slides()[doc.slides().length - 1]
-
-        var slideResult = {
-          body_showing: slide.bodyShowing(),
-          skipped: slide.skipped(),
-          slide_number: slide.slideNumber(),
-          title_showing: slide.titleShowing(),
-          default_body_item: slide.defaultBodyItem(),
-          default_title_item: slide.defaultTitleItem(),
-          presenter_notes: slide.presenterNotes(),
-          transition_properties: slide.transitionProperties()
-        }
-        JSON.stringify(slideResult)
-      APPLE
-
-      slide = Slide.new(
-        base_slide: MasterSlide.new(master_slide_name),
-        body_showing: result["body_showing"],
-        skipped: result["skipped"],
-        slide_number: result["slide_number"],
-        title_showing: result["title_showing"],
-        default_body_item: result["default_body_item"],
-        default_title_item: result["default_title_item"],
-        presenter_notes: result["presenter_notes"],
-        transition_properties: result["transition_properties"],
+      @slides = SlideArray.new(
+        results.map do |result|
+          Slide.new(
+            MasterSlide.new(result["base_slide"]),
+            document: self,
+            body_showing: result["body_showing"],
+            skipped: result["skipped"],
+            slide_number: result["slide_number"],
+            title_showing: result["title_showing"],
+            body: result["body"],
+            title: result["title"],
+            presenter_notes: result["presenter_notes"],
+            transition_properties: result["transition_properties"],
+          )
+        end
       )
-      @slides << slide
+      @slides.document = self
+      @slides
     end
 
     def save
