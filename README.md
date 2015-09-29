@@ -34,7 +34,7 @@ $ gem install keynote-client
 
 ```ruby
 require 'keynote-client'
-inlude Keynote
+include Keynote
 
 # Fetch all themes
 themes = Theme.all
