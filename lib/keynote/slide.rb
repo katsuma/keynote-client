@@ -18,7 +18,9 @@ module Keynote
       :transition_properties,
     )
 
-    def initialize(base_slide, arguments = {})
+    def initialize(base_slide = nil, arguments = {})
+      raise ArgumentError.new('base_slide is not given') unless base_slide
+
       @base_slide = base_slide
       arguments.each do |attr, val|
         send("#{attr}=", val)
@@ -27,8 +29,8 @@ module Keynote
 
     def title=(title)
       @title = title
-      return unless @document
-      return unless @slide_number
+      return unless @document && @slide_number
+
       result = eval_script <<-APPLE.unindent
         var Keynote = Application("Keynote")
         var doc = Keynote.documents.byId("#{@document.id}")
@@ -40,8 +42,8 @@ module Keynote
 
     def body=(body)
       @body = body
-      return unless @document
-      return unless @slide_number
+      return unless @document && @slide_number
+
       result = eval_script <<-APPLE.unindent
         var Keynote = Application("Keynote")
         var doc = Keynote.documents.byId("#{@document.id}")
