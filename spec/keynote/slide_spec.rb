@@ -47,6 +47,7 @@ describe Keynote::Slide do
       end
 
       it 'evals script to update Keynote' do
+        allow(Open3).to receive(:capture2).with(/osascript -l JavaScript/).and_return(["", 1])
         expect(slide).to receive(:eval_script).with(/new_title/)
         subject
         expect(slide.title).to eq('new_title')
@@ -84,6 +85,7 @@ describe Keynote::Slide do
       end
 
       it 'does not eval script to update Keynote' do
+        allow(Open3).to receive(:capture2).with(/osascript -l JavaScript/).and_return(["", 1])
         expect(slide).to receive(:eval_script).with(/new_body/)
         subject
         expect(slide.body).to eq('new_body')
