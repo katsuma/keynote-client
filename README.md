@@ -64,7 +64,7 @@ slide.body = "Hello, pen."
 
 ## Supported OS
 - OS X El Capitan
-- OS X Mavericks
+- OS X Yosemite
 
 
 ## License
