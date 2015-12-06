@@ -63,7 +63,8 @@ slide.body = "Hello, pen."
 ```
 
 ## Supported OS
-- OSX Mavericks
+- OS X El Capitan
+- OS X Mavericks
 
 
 ## License
