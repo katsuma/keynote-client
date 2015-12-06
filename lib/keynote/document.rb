@@ -136,6 +136,7 @@ module Keynote
       theme = arguments[:theme] || Theme.default
       width = arguments[:wide] ? WIDE_WIDTH : DEFAULT_WIDTH
       height = arguments[:wide] ? WIDE_HEIGHT : DEFAULT_HEIGHT
+      file_path = arguments[:file_path]
 
       result = eval_script <<-APPLE.unindent
         var Keynote = Application("Keynote")
@@ -145,7 +146,7 @@ module Keynote
         JSON.stringify(doc.properties());
       APPLE
 
-      self.new(symbolize_keys(result).merge(theme: theme, width: width, height: height))
+      self.new(symbolize_keys(result).merge(theme: theme, width: width, height: height, file_path: file_path))
     end
 
     def self.all
