@@ -56,7 +56,9 @@ describe Keynote::Slide do
   end
 
   describe '#body=' do
-    subject { slide.body=('new_body') }
+    subject { slide.body=(new_body) }
+
+    let(:new_body) { 'new_body' }
 
     context 'when document is not set' do
       let(:slide) { described_class.new('base_slide') }
@@ -84,11 +86,22 @@ describe Keynote::Slide do
         )
       end
 
-      it 'does not eval script to update Keynote' do
+      it 'evals script to update Keynote' do
         allow(Open3).to receive(:capture2).with(/osascript -l JavaScript/).and_return(["", 1])
         expect(slide).to receive(:eval_script).with(/new_body/)
         subject
         expect(slide.body).to eq('new_body')
+      end
+
+      context 'and when new_body includes new-line character' do
+        let(:new_body) { 'new\nbody' }
+
+        it 'evals script to update Keynote with escaped new body' do
+          allow(Open3).to receive(:capture2).with(/osascript -l JavaScript/).and_return(["", 1])
+          expect(slide).to receive(:eval_script).with(/new\\nbody/)
+          subject
+          expect(slide.body).to eq('new\\nbody')
+        end
       end
     end
   end
