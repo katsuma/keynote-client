@@ -28,6 +28,7 @@ module Keynote
     end
 
     def title=(title)
+      title = title.gsub(/(\r\n|\r|\n)/) { '\\n' }
       @title = title
       return unless @document && @slide_number
 
@@ -41,6 +42,7 @@ module Keynote
     end
 
     def body=(body)
+      body = body.gsub(/(\r\n|\r|\n)/) { '\\n' }
       @body = body
       return unless @document && @slide_number
 
